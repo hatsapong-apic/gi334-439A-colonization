@@ -16,6 +16,7 @@ MonoBehaviour:
   type: 7
   terrainSprites:
   - {fileID: 715473547145730461, guid: 3ba7aebda47ac2d429029c3281371a97, type: 3}
-  forestSprites: []
+  forestSprites:
+  - {fileID: 6345163277591704424, guid: 8b61782072dcd0e4b86a6ee74c3e8af1, type: 3}
   resourceYield: 
   moveCost: 2

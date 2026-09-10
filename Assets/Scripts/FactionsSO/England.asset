@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f717a808065b78842907173c09db5fc2, type: 3}
+  m_Name: England
+  m_EditorClassIdentifier: Assembly-CSharp::FactionData
+  nation: 0
+  isEuropean: 1
+  flagIcon: {fileID: -8373015988968784729, guid: 07d1eb733883baf4fa193ef5ed9a62a4, type: 3}
+  shieldIcon: {fileID: -8373015988968784729, guid: 6d01bd240b102e449951f36d162574e6, type: 3}
+  unitIcon: {fileID: 0}
+  townIcon: {fileID: 0}

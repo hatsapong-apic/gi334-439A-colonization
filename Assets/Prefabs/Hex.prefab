@@ -192,7 +192,7 @@ MonoBehaviour:
   pos: {x: 0, y: 0}
   hexType: 1
   terrainSprite: {fileID: 1992986932875585720}
-  forestSprite: {fileID: 0}
+  forestSprite: {fileID: 5776544977687896997}
   fogSprite: {fileID: 1320016319249885927}
   darkSprite: {fileID: 3209648479951463434}
   hasTown: 0
@@ -375,7 +375,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3633949907882615062, guid: ea5694e25f3471442837290f78688208, type: 3}
+  m_Sprite: {fileID: 8809773984181818955, guid: 471833ab6018c2544a19e0242fbd3640, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
