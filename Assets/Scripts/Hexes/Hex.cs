@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public enum HexType
 {
@@ -16,7 +18,7 @@ public enum HexType
     Mountains
 }
 
-public class Hex : MonoBehaviour
+public class Hex : MonoBehaviour, IPointerClickHandler
 {
 
     [SerializeField]
@@ -91,6 +93,10 @@ public class Hex : MonoBehaviour
     private TMP_Text hexText;
 
     private GameManager gameMgr;
+
+    [SerializeField]
+    protected bool visible = false;
+    public bool Visible { get { return visible; } set { visible = value; } }
 
     private void RandomTerrainSprite(Sprite[] sprites)
     {
@@ -171,4 +177,42 @@ public class Hex : MonoBehaviour
                 break;
         }
     }
+
+    private void ToggleFog(bool flag)
+    {
+        fogSprite.gameObject.SetActive(flag);
+    }
+
+    private void ToggleDark(bool flag)
+    {
+        darkSprite.gameObject.SetActive(flag);
+    }
+
+    public void DiscoverHex()
+    {
+        ToggleFog(false);
+        ToggleDark(false);
+        visible = true;
+    }
+
+    public void SeenHex()
+    {
+        ToggleFog(true);
+        ToggleDark(false);
+        visible = false;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            //Debug.Log($"Right Click-Hex:{x}, {y}");
+            if (gameMgr.CheckIfHexIsAdjacent(gameMgr.CurUnit.CurHex, this))
+            {
+                //Debug.Log("Adjacent-True");
+                gameMgr.CurUnit.PrepareMoveToHex(this);
+            }
+        }
+    }
+
 }

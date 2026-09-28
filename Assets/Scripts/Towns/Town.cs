@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class Town : MonoBehaviour
 {
@@ -33,14 +32,6 @@ public class Town : MonoBehaviour
 
     [SerializeField]
     protected GameManager gameManager;
-
-    [SerializeField]
-    private List<Town> towns = new List<Town>();
-    public List<Town> Towns { get { return towns; } set { towns = value; } }
-
-    [SerializeField]
-    private List<Unit> units = new List<Unit>();
-    public List<Unit> Units { get { return units; } set { units = value; } }
 
     public void TownInit(GameManager gameMgr, Faction fact)
     {

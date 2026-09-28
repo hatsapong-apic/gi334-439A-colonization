@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e8e60ff2ab26e409fe56e2607a221f, type: 3}
+  m_Name: 003_PlainIndians 1
+  m_EditorClassIdentifier: Assembly-CSharp::LandUnitData
+  unitName: Plain Indians
+  landUnitType: 3
+  strength: 1
+  movePointMax: 3
+  visualRange: 1
+  unitIcon: {fileID: 5648723498303219798, guid: 92a60f5d6eb0dec4a8f7b49d75b7792c, type: 3}
+  armed: 0
+  hasMusket: 0
+  hasHorse: 0

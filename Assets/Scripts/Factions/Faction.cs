@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum Nation
@@ -43,6 +44,18 @@ public class Faction : MonoBehaviour
     [SerializeField]
     private Sprite townIcon;
     public Sprite TownIcon { get { return townIcon; } }
+
+    [SerializeField]
+    private List<Town> towns = new List<Town>();
+    public List<Town> Towns { get { return towns; } set { towns = value; } }
+
+    [SerializeField]
+    private List<Unit> units = new List<Unit>();
+    public List<Unit> Units
+    {
+        get { return units; }
+        set { units = value; }
+    }
 
     public void FactionInit(FactionData data)
     {
