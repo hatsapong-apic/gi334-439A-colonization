@@ -44,6 +44,9 @@ TagManager:
   - name: Terrain
     uniqueID: 3237255371
     locked: 0
+  - name: Town
+    uniqueID: 1175435611
+    locked: 0
   - name: Unit
     uniqueID: 863954187
     locked: 0

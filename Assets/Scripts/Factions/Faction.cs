@@ -7,7 +7,15 @@ public enum Nation
     France,
     Spain,
     Netherland,
-    Portugal
+    Portugal,
+    Iroquois,
+    Comanche,
+    Sioux,
+    Navajo,
+    Aztec,
+    Maya,
+    Inca,
+    Mapuche
 }
 
 public class Faction : MonoBehaviour

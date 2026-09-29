@@ -209,6 +209,17 @@ public class GameManager : MonoBehaviour
     private NavalUnitData[] navalUnitData;
     public NavalUnitData[] NavalUnitData { get { return navalUnitData; } }
 
+    [SerializeField]
+    private bool playerTurn = true;
+    public bool PlayerTurn { get { return playerTurn; } set { playerTurn = value; } }
+
+    [SerializeField]
+    private int gameTurn = 1;
+    public int GameTurn { get { return gameTurn; } set { gameTurn = value; } }
+
+    [SerializeField]
+    private int nativeTownNum;
+
     public void SelectPlayerFaction()
     {
         int i = 0; //England
@@ -336,6 +347,7 @@ public class GameManager : MonoBehaviour
         unit.SetupPosition(hex);
 
         unit.UnitStatus = UnitStatus.OnBoard;
+        unit.TransportShip = ship;
         obj.SetActive(false);
 
         faction.Units.Add(unit);
@@ -380,6 +392,130 @@ public class GameManager : MonoBehaviour
         CameraController.instance.MoveCamera(curUnit.transform.position);
     }
 
+    public void GenerateTown(Faction faction, Hex curHex)
+    {
+        GameObject obj = Instantiate(townPrefab, curHex.Pos, Quaternion.identity, faction.TownParent);
+        Town town = obj.GetComponent<Town>();
+
+        town.TownInit(this, faction);
+        town.CurHex = curHex;
+        town.CurPos = town.CurHex.Pos;
+        faction.Towns.Add(town);
+
+        curHex.HasTown = true;
+    }
+
+    private void GenerateAllNativeTowns()
+    {
+        for (int i = 5; i < factions.Length; i++)
+        {
+            nativeTownNum = Random.Range(5, 10);
+
+            for (int j = 0; j < nativeTownNum; j++)
+            {
+                int landEdge = oceanEdgeIndex - 1;
+
+                int x = Random.Range(0, landEdge);
+                int y = Random.Range(0, HEIGHT);
+                Hex hex = allHexes[x, y];
+
+                if (HexCalculator.CheckIfHexAroundHasTown(allHexes, hex))
+                    continue;
+
+                if (hex.HexType == HexType.Mountains || hex.HexType == HexType.Ocean)
+                    continue;
+
+                if (hex.HexType != HexType.Ocean)
+                    GenerateTown(factions[i], hex);
+            }
+        }
+    }
+
+    private void GenerateLandUnit(Faction faction, Hex hex, int unitId, bool show)//normal land units
+    {
+        GameObject obj = Instantiate(landUnitPrefab, hex.Pos, Quaternion.identity, faction.UnitParent);
+        LandUnit unit = obj.GetComponent<LandUnit>();
+
+        unit.UnitInit(this, faction, landUnitData[unitId]);
+        unit.SetupPosition(hex);
+        unit.ShowHideSprite(show);
+
+        faction.Units.Add(unit);
+    }
+
+    private void GenerateAllNativeUnits()
+    {
+        for (int i = 5; i < factions.Length; i++)
+        {
+            foreach (Town town in factions[i].Towns)
+            {
+                GenerateLandUnit(factions[i], town.CurHex, 4, false); //Tropical Indian
+            }
+        }
+    }
+
+    public void CheckUnitClearingLand(Faction faction, Unit unit)
+    {
+        if (unit.UnitStatus == UnitStatus.Clearing)
+        {
+            unit.CurHex.ClearForest();
+            unit.UnitStatus = UnitStatus.None;
+        }
+    }
+
+    public void CheckUnitBuildingSettlement(Faction faction, Unit unit)
+    {
+        if (unit.UnitStatus == UnitStatus.Building)
+        {
+            GenerateTown(faction, unit.CurHex);
+            unit.UnitStatus = UnitStatus.None;
+        }
+    }
+
+    public void ResetAllUnits(Faction faction)
+    {
+        foreach (Unit unit in faction.Units)
+        {
+            CheckUnitClearingLand(faction, unit);
+            CheckUnitBuildingSettlement(faction, unit);
+            unit.MovePoint = unit.MovePointMax;
+        }
+    }
+
+    public void SelectAiUnit(Unit unit)
+    {
+        //Debug.Log($"{unit.Faction}:{unit.UnitName}");
+
+        if (curUnit != null)
+            ClearToggleBorder(curUnit);
+
+        curAiUnit = unit;
+        //UpdateCanGoHex();
+
+        FocusPlayerUnit(curAiUnit);
+        //Debug.Log($"{curAiUnit.Faction}:{curAiUnit.UnitName}");
+    }
+
+    public void SelectPlayerFirstUnit()
+    {
+        if (playerFaction.Units.Count > 0)
+        {
+            Unit firstUnit = playerFaction.Units[0];
+            SelectPlayerUnit(firstUnit);
+            CameraController.instance.MoveCamera(firstUnit.CurPos);
+        }
+    }
+
+    public void Endturn()
+    {
+        if (curUnit != null)
+            curUnit.ToggleBorder(false, Color.green);
+
+        Debug.Log("End Turn");
+        playerTurn = false;
+        AIManager.instance.StartAITurn();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -390,6 +526,8 @@ public class GameManager : MonoBehaviour
 
         GenerateAllEuropeanShips();
         GenerateAllEuropeanExplorerUnits();
+        GenerateAllNativeTowns();
+        GenerateAllNativeUnits();
     }
 
     // Update is called once per frame
@@ -400,5 +538,8 @@ public class GameManager : MonoBehaviour
 
         if (Keyboard.current.tabKey.wasPressedThisFrame)
             SelectNextPlayerUnit();
+
+        if (Keyboard.current.backspaceKey.wasPressedThisFrame)
+            Endturn();
     }
 }
