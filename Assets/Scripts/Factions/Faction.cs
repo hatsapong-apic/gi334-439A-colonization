@@ -65,6 +65,10 @@ public class Faction : MonoBehaviour
         set { units = value; }
     }
 
+    [SerializeField]
+    private bool isTropicalNatives;
+    public bool IsTropicalNatives { get { return isTropicalNatives; } }
+
     public void FactionInit(FactionData data)
     {
         nation = data.nation;
@@ -73,5 +77,6 @@ public class Faction : MonoBehaviour
         shieldIcon = data.shieldIcon;
         unitIcon = data.unitIcon;
         townIcon = data.townIcon;
+        isTropicalNatives = data.isTropicalNative;
     }
 }

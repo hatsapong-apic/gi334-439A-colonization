@@ -220,6 +220,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int nativeTownNum;
 
+    [SerializeField]
+    private Town curTown;
+    public Town CurTown { get { return curTown; } set { curTown = value; } }
+
     public void SelectPlayerFaction()
     {
         int i = 0; //England
@@ -403,6 +407,18 @@ public class GameManager : MonoBehaviour
         faction.Towns.Add(town);
 
         curHex.HasTown = true;
+        curHex.Town = town;
+
+        curTown = town;
+    }
+
+    public void SetupCurrentTown(Town town)//setup town panel
+    {
+        curTown = town;
+        Hex[] aroundHexes = HexCalculator.GetHexAroundToArray(allHexes, curTown.CurHex);
+
+        UIManager.instance.ToggleTownPanel(true);
+        UIManager.instance.SetupCurrentTown(curTown.CurHex, aroundHexes);
     }
 
     private void GenerateAllNativeTowns()
@@ -449,7 +465,9 @@ public class GameManager : MonoBehaviour
         {
             foreach (Town town in factions[i].Towns)
             {
-                GenerateLandUnit(factions[i], town.CurHex, 4, false); //Tropical Indian
+                int id = factions[i].IsTropicalNatives ? 4 : 3; //Tropical Indian
+
+                GenerateLandUnit(factions[i], town.CurHex, id, false);
             }
         }
     }
@@ -470,6 +488,20 @@ public class GameManager : MonoBehaviour
             GenerateTown(faction, unit.CurHex);
             unit.UnitStatus = UnitStatus.None;
         }
+    }
+
+    public NavalUnit CheckIfHexHasOurShipToBoard(Hex hex)
+    {
+        foreach (Unit unit in hex.UnitsInHex)
+        {
+            if (unit.UnitType == UnitType.Naval && unit.Faction == playerFaction)
+            {
+                NavalUnit ship = (NavalUnit)unit;
+                if (ship.Passengers.Count < ship.CargoHoldNum)
+                    return ship;
+            }
+        }
+        return null;
     }
 
     public void ResetAllUnits(Faction faction)
