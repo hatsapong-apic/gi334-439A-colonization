@@ -548,6 +548,10 @@ public class GameManager : MonoBehaviour
         AIManager.instance.StartAITurn();
     }
 
+    [SerializeField]
+    private ProductData[] productData;
+    public ProductData[] ProductData { get { return productData; } }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

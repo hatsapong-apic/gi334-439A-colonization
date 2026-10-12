@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -34,9 +36,38 @@ public class UIManager : MonoBehaviour
     private List<GameObject> allUnitDrags;
     public List<GameObject> AllUnitDrags { get { return allUnitDrags; } set { allUnitDrags = value; } }
 
+    [SerializeField]
+    private TerrainSlot currentSlot;
+
+    [SerializeField]
+    private GameObject blockImage;
+
+    [SerializeField]
+    private GameObject professionPanel;
+
+    [SerializeField]
+    private TMP_Text labelQuestionText;
+
+    [SerializeField]
+    private TMP_Text[] btnYieldTexts;
+
+    [SerializeField]
+    private Transform foodParent;
+
+    [SerializeField]
+    private TMP_Text foodText;
+
+    [SerializeField]
+    private List<GameObject> foodIconList = new List<GameObject>();
+
+
     public void SetupHexSlots(Hex centerHex, Hex[] aroundHexes)
     {
         centerSlot.HexSlotInit(centerHex);
+
+        //setup auto Food production on CenterSlot
+        centerSlot.Hex.YieldID = 0; //Food
+        centerSlot.AdjustActualYieldAndAccumulate();
 
         for (int i = 0; i < areaSlots.Length; i++)
         {
@@ -103,6 +134,7 @@ public class UIManager : MonoBehaviour
         if (show == false)
         {
             DestroyOldUnitDrag();
+            RemoveAllYieldIcons();
             HideUnitWorkInTown(GameManager.instance.CurTown.CurHex);
         }
         townPanel.SetActive(show);
@@ -113,8 +145,129 @@ public class UIManager : MonoBehaviour
         SetupHexSlots(curHex, aroundHexes);
         SetupUnitDragOutsideTown(curHex);
         SetupUnitDragWorkingInTerrain();
+        SetupYieldInTerrain();
+        UpdateTotalFoodIcons();
     }
 
+    public void SetupParentSpacing(int n, Transform parent, int iconWidth, int parentWidth)
+    {
+        if (n <= 1)
+            return;
+
+        HorizontalLayoutGroup layout = parent.GetComponent<HorizontalLayoutGroup>();
+
+        int totalWidth = iconWidth * n;
+        int excessWidth = totalWidth - parentWidth;
+
+        if (excessWidth <= 0)
+            return;
+
+        int result = excessWidth / (n - 1);
+        layout.spacing = -result;
+    }
+
+    private void SetupYieldInTerrain()
+    {
+        foreach (TerrainSlot terrainSlot in areaSlots)
+        {
+            if (terrainSlot.Hex == null)
+                continue;
+
+            if (terrainSlot.Hex.Labor != null && terrainSlot.Hex.YieldID != -1)
+            {
+                terrainSlot.AdjustActualYieldAndAccumulate();
+            }
+        }
+    }
+
+    public void RemoveAllYieldIcons()
+    {
+        centerSlot.RemoveYieldIcons();
+
+        foreach (TerrainSlot terrainSlot in areaSlots)
+        {
+            if (terrainSlot == null)
+                continue;
+
+            terrainSlot.RemoveYieldIcons();
+        }
+    }
+
+    public void UpdateLabelQuestionText()
+    {
+        if (currentSlot == null)
+            return;
+
+        string s = string.Format("Select a profession for {0}", currentSlot.Hex.Labor.UnitName);
+        labelQuestionText.text = s;
+    }
+
+    public void UpdateButtonTextsYield()
+    {
+        if (currentSlot == null)
+            return;
+
+        for (int i = 0; i < btnYieldTexts.Length; i++)
+        {
+            string s = string.Format("{0} {1}",
+                currentSlot.NormalYield[i], GameManager.instance.ProductData[i].productName);
+
+            btnYieldTexts[i].text = s;
+        }
+    }
+
+    public void SelectProfession(TerrainSlot slot)
+    {
+        currentSlot = slot;
+
+        UpdateLabelQuestionText();
+        UpdateButtonTextsYield();
+
+        blockImage.SetActive(true);
+        professionPanel.SetActive(true);
+    }
+
+    public void SelectYield(int i)//Link to Select Profession Button on UI
+    {
+        Debug.Log($"Select: {i}");
+
+        if (currentSlot != null)
+            currentSlot.SelectYield(i);
+
+        blockImage.SetActive(false);
+        professionPanel.SetActive(false);
+
+        if (currentSlot.Hex.YieldID == 0)
+            UpdateTotalFoodIcons();
+    }
+
+    public GameObject GenerateFoodIcon()
+    {
+        GameObject foodObj = Instantiate(yieldIconPrefab, foodParent);
+        Image iconImg = foodObj.GetComponent<Image>();
+
+        iconImg.sprite = GameManager.instance.ProductData[0].icons[0];
+
+        return foodObj;
+    }
+
+    public void UpdateTotalFoodIcons()
+    {
+        foreach (GameObject obj in foodIconList)
+            Destroy(obj);
+
+        foodIconList.Clear();
+
+        foodText.text = GameManager.instance.CurTown.TotalYieldThisTurn[0].ToString();
+        foodText.gameObject.SetActive(true);
+
+        for (int i = 0; i < GameManager.instance.CurTown.TotalYieldThisTurn[0]; i++)
+        {
+            GameObject iconobj = GenerateFoodIcon();
+            foodIconList.Add(iconobj);
+        }
+        SetupParentSpacing(GameManager.instance.CurTown.TotalYieldThisTurn[0], foodParent, 64, 300);
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
