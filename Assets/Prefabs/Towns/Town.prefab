@@ -102,6 +102,10 @@ MonoBehaviour:
   borderSprite: {fileID: 3059013998025401278}
   flagSprite: {fileID: 8020561807624351170}
   gameManager: {fileID: 0}
+  warehouse: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  totalYieldThisTurn: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  crossNum: 0
+  bellNum: 0
 --- !u!1 &3786674183202761063
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,7 +224,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3071516634604370878}
