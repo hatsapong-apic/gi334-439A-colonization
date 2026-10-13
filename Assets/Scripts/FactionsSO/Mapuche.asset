@@ -15,7 +15,7 @@ MonoBehaviour:
   nation: 12
   isEuropean: 1
   flagIcon: {fileID: 21300000, guid: 9f10c4c681afa264a97fd7d573e563e6, type: 3}
-  shieldIcon: {fileID: 1012061372078753957, guid: 7139e80c73832c04aa1b8a7a324ee479, type: 3}
+  shieldIcon: {fileID: 21300000, guid: 2fc10efdc2ad9f04daaa87a9dddb1532, type: 3}
   unitIcon: {fileID: 0}
   townIcon: {fileID: 21300000, guid: a86255b276176124d9501e56fda6e164, type: 3}
   isTropicalNative: 0
