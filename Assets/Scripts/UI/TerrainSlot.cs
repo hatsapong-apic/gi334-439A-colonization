@@ -136,7 +136,7 @@ public class TerrainSlot : MonoBehaviour, IDropHandler
             GameObject iconobj = GenerateYieldIcon(id);
             yieldIconList.Add(iconobj);
         }
-        uiMgr.SetupParentSpacing(actualYield[id], yieldParent, 64, 250);
+        uiMgr.SetupParentSpacing(actualYield[id], yieldParent, 64, 150);
     }
 
     public void ConvertNormalToActualYield(int id)
