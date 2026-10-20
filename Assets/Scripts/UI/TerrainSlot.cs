@@ -82,7 +82,8 @@ public class TerrainSlot : MonoBehaviour, IDropHandler
     public void SelectYield(int i)
     {
         hex.YieldID = i;
-        AdjustActualYieldAndAccumulate();
+        AdjustActualYield();
+        Accumulate();
     }
 
     public void HexSlotInit(Hex hexData)
@@ -150,15 +151,20 @@ public class TerrainSlot : MonoBehaviour, IDropHandler
         actualYield[id] = normalYield[id];
     }
 
-    public void AdjustActualYieldAndAccumulate()
+    public void AdjustActualYield()
     {
         ConvertNormalToActualYield(hex.YieldID);
 
         //accumulate actual yield to total production
-        gameMgr.CurTown.TotalYieldThisTurn[hex.YieldID] += actualYield[hex.YieldID];
+        //gameMgr.CurTown.TotalYieldThisTurn[hex.YieldID] += actualYield[hex.YieldID];
 
         //generate all yield icons in one hex
         GenerateYieldIcons(hex.YieldID);
+    }
+
+    private void Accumulate()
+    {
+        gameMgr.CurTown.TotalYieldThisTurn[hex.YieldID] += actualYield[hex.YieldID];
     }
 
     public void ReduceTownYield()
@@ -179,7 +185,7 @@ public class TerrainSlot : MonoBehaviour, IDropHandler
         yieldIconList.Clear();
         yieldText.gameObject.SetActive(false);
 
-        ReduceTownYield();
+        //ReduceTownYield();
 
         if (hex.YieldID == 0)
             uiMgr.UpdateTotalFoodIcons();

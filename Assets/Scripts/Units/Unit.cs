@@ -176,6 +176,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler
             gameMgr.ClearDarkFogAroundUnit(this);
             ToggleBorder(true, Color.green);
         }
+
+        gameMgr.HideOtherLandUnits(this);
     }
 
     private void MoveToHex()

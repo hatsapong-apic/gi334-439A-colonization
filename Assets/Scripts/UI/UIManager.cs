@@ -60,14 +60,40 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> foodIconList = new List<GameObject>();
 
+    [SerializeField]
+    private ShipInPort currentShipIcon;
+
+    [SerializeField]
+    private StockSlot[] stockSlots;
+
+    [SerializeField]
+    private List<GameObject> allShipIcons;
+    public List<GameObject> AllShipIcons { get { return allShipIcons; } set { allShipIcons = value; } }
+
+    [SerializeField]
+    private GameObject shipInPortPrefab;
+
+    [SerializeField]
+    private GameObject portShipsParent;
+
+    [SerializeField]
+    private GameObject stockDragPrefab;
+    public GameObject StockDragPrefab { get { return stockDragPrefab; } }
+
+    [SerializeField]
+    private CargoSlot[] cargoSlots;
 
     public void SetupHexSlots(Hex centerHex, Hex[] aroundHexes)
     {
         centerSlot.HexSlotInit(centerHex);
 
         //setup auto Food production on CenterSlot
-        centerSlot.Hex.YieldID = 0; //Food
-        centerSlot.AdjustActualYieldAndAccumulate();
+        //centerSlot.Hex.YieldID = 0; //Food
+
+        if (centerSlot.Hex.YieldID == -1)
+            centerSlot.SelectYield(0); //ChangeToFood
+        else
+            centerSlot.AdjustActualYield(); //AlreadyFood
 
         for (int i = 0; i < areaSlots.Length; i++)
         {
@@ -136,6 +162,8 @@ public class UIManager : MonoBehaviour
             DestroyOldUnitDrag();
             RemoveAllYieldIcons();
             HideUnitWorkInTown(GameManager.instance.CurTown.CurHex);
+            DestroyAllShipIcons();
+            DisableAllCargoSlots(cargoSlots);
         }
         townPanel.SetActive(show);
     }
@@ -147,6 +175,9 @@ public class UIManager : MonoBehaviour
         SetupUnitDragWorkingInTerrain();
         SetupYieldInTerrain();
         UpdateTotalFoodIcons();
+        SetupStockSlots(curHex);
+        SetupShipsInPort(curHex);
+        SetupShipsCargoSlot(curHex);
     }
 
     public void SetupParentSpacing(int n, Transform parent, int iconWidth, int parentWidth)
@@ -175,7 +206,7 @@ public class UIManager : MonoBehaviour
 
             if (terrainSlot.Hex.Labor != null && terrainSlot.Hex.YieldID != -1)
             {
-                terrainSlot.AdjustActualYieldAndAccumulate();
+                terrainSlot.AdjustActualYield();
             }
         }
     }
@@ -267,6 +298,81 @@ public class UIManager : MonoBehaviour
             foodIconList.Add(iconobj);
         }
         SetupParentSpacing(GameManager.instance.CurTown.TotalYieldThisTurn[0], foodParent, 64, 300);
+    }
+
+    public void CheckActiveUIPanel()
+    {
+        if (townPanel.activeInHierarchy)
+            ToggleTownPanel(false);
+    }
+
+    public void SetupStockSlots(Hex hex)
+    {
+        for (int i = 0; i < stockSlots.Length; i++)
+        {
+            stockSlots[i].stockInit(i, hex.Town, GameManager.instance.ProductData[i].icons[0]);
+        }
+    }
+
+    private void SetupShipsInPort(Hex hex)
+    {
+        foreach (Unit unit in hex.UnitsInHex)
+        {
+            if (unit.UnitType == UnitType.Naval)
+            {
+                GameObject unitObj = Instantiate(shipInPortPrefab, portShipsParent.transform);
+                allShipIcons.Add(unitObj);
+
+                ShipInPort shipIcon = unitObj.GetComponent<ShipInPort>();
+                shipIcon.UnitInit((NavalUnit)unit);
+            }
+        }
+    }
+
+    public void SetupCargoSlot(NavalUnit ship)
+    {
+        for (int i = 0; i < cargoSlots.Length; i++)
+        {
+            if (i < ship.CargoHoldNum)
+            {
+                cargoSlots[i].gameObject.SetActive(true);
+                cargoSlots[i].SlotInit(ship, i);
+            }
+            else
+                cargoSlots[i].gameObject.SetActive(false);
+        }
+    }
+
+    private void SetupShipsCargoSlot(Hex hex)
+    {
+        foreach (Unit unit in hex.UnitsInHex)
+        {
+            if (unit.UnitType == UnitType.Naval)
+            {
+                //first ship
+                NavalUnit firstShip = unit.gameObject.GetComponent<NavalUnit>();
+                SetupCargoSlot(firstShip);
+
+                break;
+            }
+        }
+    }
+
+    private void DestroyAllShipIcons()
+    {
+        foreach (GameObject obj in allShipIcons)
+        {
+            Destroy(obj);
+        }
+        allShipIcons.Clear();
+    }
+
+    private void DisableAllCargoSlots(CargoSlot[] cargoSlots)
+    {
+        foreach (CargoSlot slot in cargoSlots)
+        {
+            slot.gameObject.SetActive(false);
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
