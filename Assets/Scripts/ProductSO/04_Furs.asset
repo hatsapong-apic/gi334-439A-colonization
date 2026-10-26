@@ -16,3 +16,5 @@ MonoBehaviour:
   productName: Furs
   icons:
   - {fileID: 21300000, guid: 753f4d24600db2f4ba5dfcf86fd8b089, type: 3}
+  startBid: 3
+  startAsk: 5

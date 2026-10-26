@@ -23,6 +23,10 @@ public class CargoSlot : MonoBehaviour, IDropHandler
         this.holdId = holdId;
     }
 
+    [SerializeField]
+    private CargoDrag cargoDrag;
+    public CargoDrag CargoDrag { get { return cargoDrag; } set { cargoDrag = value; } }
+
     public void OnDrop(PointerEventData eventData)
     {
         //Debug.Log($"Drop on Slot:{holdId}");
@@ -43,6 +47,8 @@ public class CargoSlot : MonoBehaviour, IDropHandler
 
         int cargoLeft = ship.AddCargo(holdId, stockDrag.Cargo);
         stockDrag.Cargo.Quantity = cargoLeft;
+
+        uiMgr.UpdateCargoSlots(ship);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

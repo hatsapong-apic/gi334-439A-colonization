@@ -84,6 +84,7 @@ public class NavalUnit : Unit
             passenger.CurHex = hex;
             passenger.CurPos = hex.Pos;
         }
+        gameMgr.CheckShipToEurope();
     }
 
     public int AddCargo(int id, Cargo newCargo)

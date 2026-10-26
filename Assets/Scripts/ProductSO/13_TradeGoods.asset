@@ -16,3 +16,5 @@ MonoBehaviour:
   productName: TradeGoods
   icons:
   - {fileID: 21300000, guid: a4975607ed33241449278dbad7ff2633, type: 3}
+  startBid: 10
+  startAsk: 14
