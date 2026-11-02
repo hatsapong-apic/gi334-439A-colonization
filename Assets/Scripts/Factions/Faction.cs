@@ -69,6 +69,10 @@ public class Faction : MonoBehaviour
     private bool isTropicalNatives;
     public bool IsTropicalNatives { get { return isTropicalNatives; } }
 
+    [SerializeField]
+    private int money = 1000;
+    public int Money { get { return money; } set { money = value; } }
+
     public void FactionInit(FactionData data)
     {
         nation = data.nation;

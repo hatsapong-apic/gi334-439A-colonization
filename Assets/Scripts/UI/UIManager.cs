@@ -82,6 +82,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private CargoSlot[] cargoSlots;
+    public CargoSlot[] CargoSlots { get { return cargoSlots; } }
 
     [SerializeField]
     private GameObject cargoDragPrefab; //icon dragged from ship's cargo 
@@ -212,7 +213,7 @@ public class UIManager : MonoBehaviour
             HideUnitWorkInTown(GameManager.instance.CurTown.CurHex);
             DestroyAllShipIcons();
             DisableAllCargoSlots(cargoSlots);
-            DeleteAllCargoDragsInSlots();
+            DeleteAllCargoDragsInSlots(cargoSlots);
         }
         townPanel.SetActive(show);
     }
@@ -227,6 +228,7 @@ public class UIManager : MonoBehaviour
         SetupStockSlots(curHex);
         SetupShipsInPort(curHex);
         SetupShipsCargoSlot(curHex);
+        UpdateMoneyText();
     }
 
     public void SetupParentSpacing(int n, Transform parent, int iconWidth, int parentWidth)
@@ -362,7 +364,7 @@ public class UIManager : MonoBehaviour
     {
         for (int i = 0; i < stockSlots.Length; i++)
         {
-            stockSlots[i].stockInit(i, hex.Town, GameManager.instance.ProductData[i].icons[0]);
+            stockSlots[i].stockInit(i, hex.Town, inEurope);
         }
     }
 
@@ -376,12 +378,12 @@ public class UIManager : MonoBehaviour
                 allShipIcons.Add(unitObj);
 
                 ShipInPort shipIcon = unitObj.GetComponent<ShipInPort>();
-                shipIcon.UnitInit((NavalUnit)unit);
+                shipIcon.UnitInit((NavalUnit)unit, false);
             }
         }
     }
 
-    public void SetupCargoSlot(NavalUnit ship)
+    public void SetupCargoSlot(NavalUnit ship, CargoSlot[] cargoSlots)
     {
         for (int i = 0; i < cargoSlots.Length; i++)
         {
@@ -403,7 +405,8 @@ public class UIManager : MonoBehaviour
             {
                 //first ship
                 NavalUnit firstShip = unit.gameObject.GetComponent<NavalUnit>();
-                SetupCargoSlot(firstShip);
+                SetupCargoSlot(firstShip, cargoSlots);
+                UpdateCargoSlots(firstShip, cargoSlots);
 
                 break;
             }
@@ -435,7 +438,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void DeleteAllCargoDragsInSlots()
+    private void DeleteAllCargoDragsInSlots(CargoSlot[] cargoSlots)
     {
         foreach (CargoSlot slot in cargoSlots)
         {
@@ -447,9 +450,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateCargoSlots(NavalUnit ship) //Update icon in ship's hold
+    public void UpdateCargoSlots(NavalUnit ship, CargoSlot[] cargoSlots) //Update icon in ship's hold
     {
-        DeleteAllCargoDragsInSlots();
+        DeleteAllCargoDragsInSlots(cargoSlots);
 
         for (int i = 0; i < ship.CargoList.Count; i++)
         {
@@ -472,7 +475,7 @@ public class UIManager : MonoBehaviour
         if (flag == false)
         {
             DestroyAllShipsEuropeIcons();
-
+            DisableAllCargoSlots(cargoSlotsEurope);
             europePanel.SetActive(false);
             inEurope = false;
         }
@@ -483,7 +486,11 @@ public class UIManager : MonoBehaviour
             inEurope = true;
 
             SetupShipsToEurope(EuropeManager.instance.ShipsToEurope);
+            SetupShipsFromEurope(EuropeManager.instance.ShipsFromEurope);
             SetupShipsInEurope(EuropeManager.instance.ShipsInEurope);
+            SetupShipsCargoSlotEurope(EuropeManager.instance.ShipsInEurope);
+            SetupStockSlotsEurope();
+            UpdateMoneyEuropeText();
         }
     }
 
@@ -503,7 +510,7 @@ public class UIManager : MonoBehaviour
             allShipToEuropeIcons.Add(unitObj);
 
             ShipInPort shipIcon = unitObj.GetComponent<ShipInPort>();
-            shipIcon.UnitInit(shipInTransit.Ship);
+            shipIcon.UnitInit(shipInTransit.Ship, false);
             shipIcon.UpdateTurnText(shipInTransit.TurnLeft);
         }
     }
@@ -534,9 +541,69 @@ public class UIManager : MonoBehaviour
                 allShipInEuropeIcons.Add(unitObj);
 
                 ShipInPort shipIcon = unitObj.GetComponent<ShipInPort>();
-                shipIcon.UnitInit((NavalUnit)unit);
+                shipIcon.UnitInit((NavalUnit)unit, true);
             }
         }
+    }
+
+    private void SetupShipsCargoSlotEurope(List<NavalUnit> ships)
+    {
+        foreach (Unit unit in ships)
+        {
+            if (unit.UnitType == UnitType.Naval)
+            {
+                //first ship
+                NavalUnit firstShip = unit.gameObject.GetComponent<NavalUnit>();
+                SetupCargoSlot(firstShip, cargoSlotsEurope);
+                UpdateCargoSlots(firstShip, cargoSlotsEurope);
+
+                break;
+            }
+        }
+    }
+
+    public void SetupStockSlotsEurope()
+    {
+        for (int i = 0; i < stockSlotsEurope.Length; i++)
+        {
+            stockSlotsEurope[i].StockInitEurope(i);
+        }
+    }
+
+    public void UpdateMoneyText()
+    {
+        moneyText.text = $"{GameManager.instance.PlayerFaction.Money}";
+    }
+
+    public void UpdateMoneyEuropeText()
+    {
+        moneyEuropeText.text = $"{GameManager.instance.PlayerFaction.Money}";
+    }
+
+    private void SetupShipsFromEurope(List<ShipInTransit> shipsToEU)
+    {
+        foreach (ShipInTransit shipInTransit in shipsToEU)
+        {
+            GameObject unitObj = Instantiate(shipInPortPrefab, fromEuropeShipsParent.transform);
+            allShipFromEuropeIcons.Add(unitObj);
+
+            ShipInPort shipIcon = unitObj.GetComponent<ShipInPort>();
+            shipIcon.UnitInit(shipInTransit.Ship, false);
+            shipIcon.UpdateTurnText(shipInTransit.TurnLeft);
+        }
+    }
+
+    public void UpdateIconsFromEuropeToNewWorld()
+    {
+        DestroyShipIcons(allShipFromEuropeIcons);
+        SetupShipsFromEurope(EuropeManager.instance.ShipsFromEurope);
+
+        DestroyShipIcons(AllShipInEuropeIcons);
+        SetupShipsInEurope(EuropeManager.instance.ShipsInEurope);
+
+        DeleteAllCargoDragsInSlots(cargoSlotsEurope);
+        DisableAllCargoSlots(cargoSlotsEurope);
+        SetupShipsCargoSlotEurope(EuropeManager.instance.ShipsInEurope);
     }
 
 }
