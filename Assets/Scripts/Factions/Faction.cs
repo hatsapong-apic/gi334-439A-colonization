@@ -73,6 +73,18 @@ public class Faction : MonoBehaviour
     private int money = 1000;
     public int Money { get { return money; } set { money = value; } }
 
+    [SerializeField]
+    private Sprite leaderSprite;
+    public Sprite LeaderSprite { get { return leaderSprite; } }
+
+    [SerializeField]
+    private bool metByPlayer = false;
+    public bool MetByPlayer { get { return metByPlayer; } set { metByPlayer = value; } }
+
+    [SerializeField]
+    private bool atPeaceWithPlayer = true;
+    public bool AtPeaceWithPlayer { get { return atPeaceWithPlayer; } set { atPeaceWithPlayer = value; } }
+
     public void FactionInit(FactionData data)
     {
         nation = data.nation;
@@ -82,5 +94,6 @@ public class Faction : MonoBehaviour
         unitIcon = data.unitIcon;
         townIcon = data.townIcon;
         isTropicalNatives = data.isTropicalNative;
+        leaderSprite = data.leaderSprite;
     }
 }

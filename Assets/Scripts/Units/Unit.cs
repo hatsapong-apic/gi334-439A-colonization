@@ -87,6 +87,13 @@ public class Unit : MonoBehaviour, IPointerClickHandler
     protected SpriteRenderer borderSprite;
 
     [SerializeField]
+    protected Unit targetUnit;
+    public Unit TargetUnit { get { return targetUnit; } set { targetUnit = value; } }
+
+    [SerializeField]
+    protected UIManager uiMgr;
+
+    [SerializeField]
     protected GameManager gameMgr;
 
     public void SetupPosition(Hex hex)
@@ -137,7 +144,14 @@ public class Unit : MonoBehaviour, IPointerClickHandler
                 if (faction == gameMgr.PlayerFaction)//same side unit
                     gameMgr.CurUnit.PrepareMoveToHex(curHex);
                 else//diff side unit
+                {
                     Debug.Log($"{gameMgr.CurUnit} Attacks {unitName}");
+                    if(curHex.MoveCost > MovePoint)
+                        return;
+
+                    gameMgr.CurUnit.AttackUnit(curHex, this);
+                }
+
             }
         }
     }
@@ -197,6 +211,25 @@ public class Unit : MonoBehaviour, IPointerClickHandler
             if (faction == gameMgr.PlayerFaction)
                 gameMgr.ClearDarkFogAroundEveryUnit(faction);
         }
+    }
+
+    public void AttackUnit(Hex target, Unit defender) //Begin to Attack
+    {
+        //Debug.Log($"MoveCost-{target.MoveCost}");
+        //Debug.Log($"UnitMovementP-{movePoint}");
+        //Debug.Log("Attack");
+
+        if (target.MoveCost > movePoint)
+            return;
+
+        //isMoving = true;
+        targetHex = target;
+        targetUnit = defender;
+        //Debug.Log($"Target Pos:{targetHex.transform.position.x},{targetHex.transform.position.y}");
+
+        //Attack Animation
+
+        gameMgr.StartCombat(this, defender);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

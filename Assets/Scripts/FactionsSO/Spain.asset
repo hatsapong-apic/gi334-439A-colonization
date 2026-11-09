@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f717a808065b78842907173c09db5fc2, type: 3}
   m_Name: Spain
   m_EditorClassIdentifier: Assembly-CSharp::FactionData
-  nation: 0
+  nation: 2
   isEuropean: 1
   flagIcon: {fileID: 21300000, guid: 57eaf3e389d46cc4292ad55c2c623a9c, type: 3}
   shieldIcon: {fileID: 21300000, guid: 7139e80c73832c04aa1b8a7a324ee479, type: 3}
   unitIcon: {fileID: 0}
   townIcon: {fileID: 21300000, guid: 87b2b9c65e89cf44db7b4dfa8da519d0, type: 3}
   isTropicalNative: 0
+  leaderSprite: {fileID: 21300000, guid: eb209b6359bec694cb862700e4facfdb, type: 3}

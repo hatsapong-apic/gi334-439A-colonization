@@ -606,4 +606,19 @@ public class UIManager : MonoBehaviour
         SetupShipsCargoSlotEurope(EuropeManager.instance.ShipsInEurope);
     }
 
+    public void ShowColonyClearLandText()
+    {
+        DialogManager.instance.ShowColonyClearLandText();
+    }
+
+    public void ShowColonyNotEnoughToolsText(int n)
+    {
+        DialogManager.instance.ShowColonyNotEnoughToolsText(n);
+    }
+
+    public void ShowColonyHasOtherTownAroundText()
+    {
+        DialogManager.instance.ShowColonyHasOtherTownAround();
+    }
+
 }
